@@ -13,6 +13,11 @@ exports.createMessage = async (req, res) => {
     const sender = await User.findOne({_id: senderId});
     const receiver = await User.findOne({_id: receiverId});
 
+    if(senderId === receiverId){
+        res.status(500).send({ message: "you cannot message yourself"});
+        return;
+    }
+
     const messageObj = new Message({
         senderEmail: sender.email,
         senderId,
