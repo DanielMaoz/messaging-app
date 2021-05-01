@@ -10,21 +10,19 @@ exports.create = (req, res) => {
         return;
     }
 
+    const {first_name, last_name} = req.body;
+
     // Create a User
     const user = new User({
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        full_name: _.trim(req.body.first_name) + _.trim(req.body.last_name)
+        first_name: _.capitalize(first_name),
+        last_name: _.capitalize(last_name),
+        full_name: _.capitalize(_.trim(req.body.first_name)) + ' ' + _.capitalize(_.trim(req.body.last_name))
     });
 
     // Save User in the database
-    user
-        .save(user)
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
+    user.save(user)
+        .then(data => {res.send(data);})
+        .catch(err => {res.status(500).send({
                 user:
                     err.user || "Some error occurred while creating the User."
             });

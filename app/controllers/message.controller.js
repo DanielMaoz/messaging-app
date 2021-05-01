@@ -1,18 +1,22 @@
 const db = require("../models");
 const Message = db.messages;
+const User = db.users;
 
 // Create and Save a new Message
-exports.createMessage = (req, res) => {
-    const {senderName, senderId, receiverName, receiverId, message, subject} = req.body
-    if (!senderName || !senderId || !receiverName || !receiverId || !message || !subject) {
+exports.createMessage = async (req, res) => {
+    const {senderId, receiverId, message, subject} = req.body
+    if (!senderId || !receiverId || !message || !subject) {
         res.status(400).send({ message: "One or more properties is missing from the request" });
         return;
     }
 
+    const sender = await User.findOne({_id: senderId});
+    const receiver = await User.findOne({_id: receiverId});
+
     const messageObj = new Message({
-        senderName,
+        senderName: sender.full_name,
         senderId,
-        receiverName,
+        receiverName: receiver.full_name,
         receiverId,
         message,
         subject
