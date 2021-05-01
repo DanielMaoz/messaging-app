@@ -1,10 +1,10 @@
 module.exports = app => {
-    const messages = require("../controllers/user.controller");
+    const Users = require("../controllers/user.controller");
 
     var router = require("express").Router();
 
-    // Create a new Message
-    router.post("/", messages.create);
+    // Create a new User
+    router.post("/", Users.create);
 
     app.use('/api/user', router);
 };

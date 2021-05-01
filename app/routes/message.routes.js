@@ -8,7 +8,7 @@ module.exports = app => {
     router.get("/:id", messages.getAllMessagesByUserId);
     router.get("/unread/:id", messages.getAllUnreadMessagesByUserId);
     router.get("/message/:id", messages.getMessageById);
-    router.delete("/:id", messages.deleteMessageById);
+    router.delete("/:messageId/:userId", messages.deleteMessageById);
 
     app.use('/api/messages', router);
 };

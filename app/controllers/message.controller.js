@@ -28,6 +28,12 @@ exports.createMessage = (req, res) => {
 // Retrieve all Messages from a user.
 exports.getAllMessagesByUserId = (req, res) => {
     const userId = req.params.id;
+
+    if(!userId){
+        res.status(400).send({ message: "userId is missing from the request" });
+        return;
+    }
+
     Message.find({senderId: userId})
         .then(data => {res.send(data);})
         .catch(err => {res.status(500).send({
@@ -39,6 +45,12 @@ exports.getAllMessagesByUserId = (req, res) => {
 // Retrieve all unread Messages from a user.
 exports.getAllUnreadMessagesByUserId = (req, res) => {
     const userId = req.params.id;
+
+    if(!userId){
+        res.status(400).send({ message: "userId is missing from the request" });
+        return;
+    }
+
     Message.find({senderId: userId, read: false})
         .then(data => { res.send(data); })
         .catch(err => { res.status(500).send({
@@ -50,6 +62,12 @@ exports.getAllUnreadMessagesByUserId = (req, res) => {
 // Find a single Message with an id
 exports.getMessageById = (req, res) => {
     const messageId = req.params.id;
+
+    if(!messageId){
+        res.status(400).send({ message: "messageId is missing from the request" });
+        return;
+    }
+
     Message.findOne({_id: messageId}).lean()
         .then(async message => {
             if(message._id && !message.read) message = await Message.findOneAndUpdate({_id: messageId}, {read: true}, {new: true});
@@ -64,7 +82,14 @@ exports.getMessageById = (req, res) => {
 // Delete a Message with a specified id
 exports.deleteMessageById = (req, res) => {
     const {messageId, userId} = req.params;
+
+    if (!messageId || !userId) {
+        res.status(400).send({message: "One or more properties is missing from the request"});
+        return;
+    }
+
     Message.findOne({_id: messageId}).then(messageToDelete => {
+        //delete if both sides deleted
         if(messageToDelete.deletedBy) {
             Message.deleteOne({_id: messageId})
                 .then( deletedMessage => { res.send(deletedMessage); })
@@ -73,9 +98,10 @@ exports.deleteMessageById = (req, res) => {
                     })
                 })
         }
+        //delete only for one user
         else{
             Message.findOneAndUpdate({_id: messageId}, {deletedBy: userId})
-                .then( deletedMessage => { res.send(deletedMessage) })
+                .then( deletedMessage => { res.send(deletedMessage); })
                 .catch( err => { res.status(500).send({
                         message: err.message || `Some error occurred while retrieving messages for user : ${messageId}`
                     })
