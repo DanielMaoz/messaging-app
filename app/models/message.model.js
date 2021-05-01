@@ -6,9 +6,9 @@ module.exports = mongoose => {
         mongoose.Schema(
             {
                 _id: {type: String, default: generateRandomString},
-                senderName: String,
+                senderEmail: String,
                 senderId: String,
-                receiverName: String,
+                receiverEmail: String,
                 receiverId: String,
                 message: String,
                 subject: String,

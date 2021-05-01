@@ -6,9 +6,9 @@ module.exports = mongoose => {
         mongoose.Schema(
             {
                 _id: {type: String, default:generateRandomString},
-                first_name: String,
-                last_name: String,
-                full_name: String
+                username: String,
+                email: String,
+                password: String
             },
             {timestamps: true}
         )

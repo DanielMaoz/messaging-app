@@ -4,7 +4,7 @@ const User = db.users;
 
 // Create and Save a new Message
 exports.createMessage = async (req, res) => {
-    const {senderId, receiverId, message, subject} = req.body
+    const {senderId, receiverId, message, subject} = req.body;
     if (!senderId || !receiverId || !message || !subject) {
         res.status(400).send({ message: "One or more properties is missing from the request" });
         return;
@@ -14,9 +14,9 @@ exports.createMessage = async (req, res) => {
     const receiver = await User.findOne({_id: receiverId});
 
     const messageObj = new Message({
-        senderName: sender.full_name,
+        senderEmail: sender.email,
         senderId,
-        receiverName: receiver.full_name,
+        receiverEmail: receiver.email,
         receiverId,
         message,
         subject
@@ -30,8 +30,8 @@ exports.createMessage = async (req, res) => {
 };
 
 // Retrieve all Messages from a user.
-exports.getAllMessagesByUserId = (req, res) => {
-    const userId = req.params.id;
+exports.getAllMessagesByUserId = (req, res, next) => {
+    const userId = req.userId || req.params.id;
 
     if(!userId){
         res.status(400).send({ message: "userId is missing from the request" });
@@ -94,7 +94,7 @@ exports.deleteMessageById = (req, res) => {
 
     Message.findOne({_id: messageId}).then(messageToDelete => {
         //delete if both sides deleted
-        if(messageToDelete.deletedBy) {
+        if(messageToDelete.deletedBy && messageToDelete.deletedBy !== userId) {
             Message.deleteOne({_id: messageId})
                 .then( deletedMessage => { res.send(deletedMessage); })
                 .catch( err => { res.status(500).send({
