@@ -16,6 +16,8 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(express.static("public"))
+
 // simple route
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to node messaging application." });
