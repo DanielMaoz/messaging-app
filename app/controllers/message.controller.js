@@ -34,7 +34,7 @@ exports.createMessage = async (req, res) => {
         });
 };
 
-// Retrieve all Messages from a user.
+// Retrieve all Messages for a user.
 exports.getAllMessagesByUserId = (req, res, next) => {
     const userId = req.userId || req.params.id;
 
@@ -43,7 +43,10 @@ exports.getAllMessagesByUserId = (req, res, next) => {
         return;
     }
 
-    Message.find({senderId: userId})
+    Message.find({$or:[
+                    {senderId: userId},
+                    {receiverId: userId}
+                ]})
         .then(data => {res.send(data);})
         .catch(err => {res.status(500).send({
                 message: err.message || `Some error occurred while retrieving messages for user : ${userId}`
@@ -51,7 +54,7 @@ exports.getAllMessagesByUserId = (req, res, next) => {
         });
 };
 
-// Retrieve all unread Messages from a user.
+// Retrieve all unread Messages for a user.
 exports.getAllUnreadMessagesByUserId = (req, res) => {
     const userId = req.params.id;
 
@@ -60,7 +63,10 @@ exports.getAllUnreadMessagesByUserId = (req, res) => {
         return;
     }
 
-    Message.find({senderId: userId, read: false})
+    Message.find({$or:[
+            {senderId: userId},
+            {receiverId: userId}
+        ]})
         .then(data => { res.send(data); })
         .catch(err => { res.status(500).send({
                 message: err.message || `Some error occurred while retrieving messages for user : ${userId}`
