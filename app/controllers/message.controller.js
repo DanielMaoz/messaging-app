@@ -63,10 +63,13 @@ exports.getAllUnreadMessagesByUserId = (req, res) => {
         return;
     }
 
-    Message.find({$or:[
+    Message.find({
+        $or:[
             {senderId: userId},
             {receiverId: userId}
-        ]})
+        ],
+        read: false
+    })
         .then(data => { res.send(data); })
         .catch(err => { res.status(500).send({
                 message: err.message || `Some error occurred while retrieving messages for user : ${userId}`
